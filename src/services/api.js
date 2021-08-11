@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getWithExpiry } from '../helpers/storage';
+import { getWithExpiry } from '../helpers/helpers';
 
 const axios_api = axios.create({
   headers: {
@@ -8,7 +8,7 @@ const axios_api = axios.create({
   baseURL: process.env.VUE_APP_BASE_URL,
 });
 
-axios_api.interceptors.request.use((request) => {
+axios_api.interceptors.request.use(request => {
   const token = getWithExpiry('token');
 
   if (token) {
@@ -18,12 +18,12 @@ axios_api.interceptors.request.use((request) => {
   return request;
 });
 
-axios_api.interceptors.response.use((response) => {
+axios_api.interceptors.response.use(response => {
   console.log('<<got a response>> ', response);
   return response;
 });
 
-axios_api.interceptors.response.use(null, (error) => {
+axios_api.interceptors.response.use(null, error => {
   console.error('api.js interceptors | Error: ', error);
   return error;
 });

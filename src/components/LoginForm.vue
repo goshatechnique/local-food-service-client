@@ -53,6 +53,18 @@
         />
       </div>
       <div v-if="formType === 'registration'" class="form-input-container">
+        <input
+          v-bind:class="[
+            warnMessage && city === '' ? 'input-warning' : '',
+            'form-input-container-background form-input-container-background-input',
+          ]"
+          type="text"
+          v-model="phoneNumber"
+          placeholder="phone number"
+          @blur="validatePhoneNumber"
+        />
+      </div>
+      <div v-if="formType === 'registration'" class="form-input-container">
         <select
           v-bind:class="[
             warnMessage && city === '' ? 'input-warning' : '',
@@ -97,6 +109,7 @@ export default {
       password: '',
       country: '',
       city: '',
+      phoneNumber: '',
       accountType: '',
       isEmailValid: false,
       signInMessage: 'Already have an account? Sign in',
@@ -115,6 +128,10 @@ export default {
         return false;
       }
     },
+    validatePhoneNumber() {
+      if (this.phoneNumber === '') return;
+      return this.phoneNumber.match(/\d/g).length === 9;
+    },
     switchFormType() {
       this.formType =
         this.formType === 'registration' ? 'authorization' : 'registration';
@@ -126,11 +143,18 @@ export default {
           this.password &&
           this.country &&
           this.city &&
+          this.phoneNumber &&
           this.accountType
         ) {
           if (!this.isEmailValid) {
             this.warnMessage = 'Email not valid';
             return;
+          }
+          if (this.accountType === 'Seller' || this.phoneNumber !== '') {
+            if (!this.validatePhoneNumber()) {
+              this.warnMessage = 'Phone not valid';
+              return;
+            }
           }
           this.warnMessage = '';
           this.registration({
@@ -138,6 +162,7 @@ export default {
             password: this.password,
             country: this.country,
             city: this.city,
+            phoneNumber: this.phoneNumber,
             accountType: this.accountType,
           });
         } else {

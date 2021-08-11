@@ -8,7 +8,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Header from './components/Header';
-import { getWithExpiry } from './helpers/storage';
+import { getWithExpiry } from './helpers/helpers';
 
 export default {
   name: 'App',
@@ -22,7 +22,7 @@ export default {
     ...mapGetters(['user']),
   },
   mounted() {
-    getWithExpiry('token') ? this.fetchCurrentUser() : null;
+    if (getWithExpiry('token')) this.fetchCurrentUser();
   },
   watch: {
     user: function (value) {
