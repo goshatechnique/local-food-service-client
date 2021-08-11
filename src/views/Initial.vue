@@ -6,14 +6,19 @@
 
 <script>
 import LoginForm from '../components/LoginForm.vue';
-
+import { mapGetters } from 'vuex';
 export default {
   name: 'Initial',
   components: {
     LoginForm,
   },
+  computed: {
+    ...mapGetters(['user']),
+  },
   methods: {},
-  mounted() {},
+  created() {
+    if (this.user !== null) this.$router.push('/home');
+  },
 };
 </script>
 

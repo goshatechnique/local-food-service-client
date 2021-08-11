@@ -25,6 +25,9 @@ export default {
       this.$router.push('/');
     },
   },
+  mounted() {
+    if (this.user === null) this.$router.push('/');
+  },
 };
 </script>
 
@@ -38,6 +41,5 @@ export default {
     'filters marketplace'
     'filters marketplace';
   overflow: hidden;
-  overflow-y: scroll;
 }
 </style>

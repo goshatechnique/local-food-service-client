@@ -55,7 +55,7 @@
       <div v-if="formType === 'registration'" class="form-input-container">
         <input
           v-bind:class="[
-            warnMessage && city === '' ? 'input-warning' : '',
+            warnMessage && phoneNumber === '' ? 'input-warning' : '',
             'form-input-container-background form-input-container-background-input',
           ]"
           type="text"
@@ -67,7 +67,7 @@
       <div v-if="formType === 'registration'" class="form-input-container">
         <select
           v-bind:class="[
-            warnMessage && city === '' ? 'input-warning' : '',
+            warnMessage && accountType === '' ? 'input-warning' : '',
             'form-input-container-background form-input-container-background-select',
           ]"
           v-model="accountType"
@@ -130,7 +130,7 @@ export default {
     },
     validatePhoneNumber() {
       if (this.phoneNumber === '') return;
-      return this.phoneNumber.match(/\d/g).length === 9;
+      return this.phoneNumber.match(/\d/g) && this.phoneNumber.length === 9;
     },
     switchFormType() {
       this.formType =
@@ -193,7 +193,7 @@ $linkColor: #28349b;
 $grayColorLight: #eeeeee;
 $grayColor: #e1e1e1;
 $grayColorDark: #757575;
-$greenColor: #3fba83;
+$greenColor: #47d1af;
 $greenColorLight: #bae6d5;
 $greenColorLight2: #c7ebdf;
 $orangeColor: #dba614;
@@ -292,6 +292,24 @@ $redColor: #c42e1a;
   transition: 0.5s;
   &:hover {
     color: $linkColor;
+  }
+}
+
+@media all and (max-width: 1024px) {
+  .container {
+    width: 450px;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .container {
+    width: 400px;
+  }
+}
+
+@media all and (max-width: 500px) {
+  .container {
+    width: 360px;
   }
 }
 </style>

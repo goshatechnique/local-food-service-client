@@ -32,7 +32,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$textColor: #314252;
+$whiteColor: #ffffff;
+$linkColor: #28349b;
+$grayColorLight: #eeeeee;
 $grayColor: #e1e1e1;
+$grayColorDark: #757575;
+$greenColor: #47d1af;
+$greenColorLight: #bae6d5;
+$greenColorLight2: #c7ebdf;
+$greenColorLight3: #e3f9f5;
+$orangeColor: #dba614;
+$redColor: #c42e1a;
 
 .container {
   grid-area: header;
@@ -40,14 +51,18 @@ $grayColor: #e1e1e1;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  border-bottom: 1px solid $grayColor;
+  border-bottom: 1px solid $greenColor;
+  background-color: $greenColorLight3;
 }
 
 .header-logo {
-  padding-left: 25px;
+  margin-left: 25px;
+  padding: 5px 10px;
   font-size: 1.5em;
   font-weight: bold;
   user-select: none;
+  background-color: $greenColor;
+  color: $whiteColor;
 }
 
 .header-account {
@@ -62,5 +77,30 @@ $grayColor: #e1e1e1;
   padding-left: 15px;
   width: 30px;
   cursor: pointer;
+  transition: 0.5s;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+@media all and (max-width: 1024px) {
+  .header-logo {
+    margin-left: 20px;
+    font-size: 1.3em;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .header-logo {
+    margin-left: 15px;
+    font-size: 1.1em;
+  }
+}
+
+@media all and (max-width: 500px) {
+  .header-logo {
+    margin-left: 10px;
+    font-size: 0.9em;
+  }
 }
 </style>

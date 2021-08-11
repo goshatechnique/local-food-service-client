@@ -36,7 +36,7 @@ export default {
 
 <style lang="scss">
 $textColor: #314252;
-$greenColor: #3fba83;
+$greenColor: #47d1af;
 
 * {
   font-family: 'Courier New', Courier, monospace;

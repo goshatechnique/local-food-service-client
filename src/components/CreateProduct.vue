@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <button @click="switchCreateProduct">Create product</button>
+    <button class="container-create-btn" @click="switchCreateProduct">
+      CREATE PRODUCT
+    </button>
     <div
       v-if="isCreateProductVisible"
       @click="switchCreateProduct"
@@ -217,14 +219,36 @@ $linkColor: #28349b;
 $grayColorLight: #eeeeee;
 $grayColor: #e1e1e1;
 $grayColorDark: #757575;
-$greenColor: #3fba83;
+$greenColor: #47d1af;
 $greenColorLight: #bae6d5;
 $greenColorLight2: #c7ebdf;
+$greenColorLight3: #e3f9f5;
+$greenColorDark: #2e6d51;
 $orangeColor: #dba614;
 $redColor: #c42e1a;
 
 .container {
   margin: 25px 0 25px 0;
+  width: 100%;
+}
+
+.container-create-btn {
+  border: 1px solid $greenColor;
+  color: $greenColor;
+  background-color: $whiteColor;
+  outline: none;
+  transition: 0.5s;
+  height: 35px;
+  width: 90%;
+  box-sizing: border-box;
+  transition: 0.5s;
+  cursor: pointer;
+  &:hover {
+    background-color: $greenColor;
+    border: 1px solid $whiteColor;
+    color: $whiteColor;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  }
 }
 
 .overlay {

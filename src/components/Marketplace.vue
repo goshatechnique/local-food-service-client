@@ -1,18 +1,24 @@
 <template>
   <div class="container">
+    <ProductPopup
+      v-if="isProductPopupVisible"
+      :switchProductPopup="switchProductPopup"
+      :selectedProduct="selectedProduct"
+    />
     <GmapMap
+      v-if="productsList.length > 0"
       :center="{
         lat: this.currentCoordinates.lat,
         lng: this.currentCoordinates.lng,
       }"
       :zoom="9"
-      style="width: 100%; height: 450px"
+      style="width: 100%"
     >
       <GmapMarker
         v-for="(product, index) in productsList"
         :key="index"
         :position="product.location"
-        @click="logMarker(product)"
+        @click="switchProductPopup(product)"
       />
     </GmapMap>
     <div class="products-list">
@@ -23,6 +29,10 @@
         :price="product.price"
         :location="product.location"
         :description="product.description"
+        :id="product._id"
+        :ownerId="product.ownerId"
+        :highlightedItemId="highlightedItemId"
+        :switchProductPopup="switchProductPopup"
       />
     </div>
   </div>
@@ -31,17 +41,23 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import Product from './Product.vue';
+import ProductPopup from './ProductPopup.vue';
 export default {
   name: 'Marketplace',
   components: {
     Product,
+    ProductPopup,
+  },
+  data: function () {
+    return {
+      highlightedItemId: '',
+      isProductPopupVisible: false,
+      selectedProduct: {},
+    };
   },
   methods: {
     ...mapActions(['fetchProducts']),
     ...mapMutations(['updateCurrentCoordinates']),
-    logMarker: function (product) {
-      console.log('product info: ', product);
-    },
     getCurrentLocation: function () {
       navigator.geolocation.getCurrentPosition(position => {
         this.updateCurrentCoordinates({
@@ -49,6 +65,15 @@ export default {
           lng: position.coords.longitude,
         });
       });
+    },
+    switchProductPopup: function (product) {
+      this.selectedProduct = product;
+      this.isProductPopupVisible = !this.isProductPopupVisible;
+      if (product) {
+        this.highlightedItemId = product._id;
+      } else {
+        this.highlightedItemId = '';
+      }
     },
   },
   computed: {
@@ -72,12 +97,12 @@ export default {
 <style lang="scss" scoped>
 .container {
   grid-area: marketplace;
+  display: grid;
+  grid-template-rows: minmax(250px, 1fr) minmax(250px, 1fr);
 }
 .products-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 300px);
-  grid-auto-rows: 350px;
-  gap: 1em;
-  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
 }
 </style>

@@ -15,7 +15,7 @@ const user = {
     },
     logout: function (state) {
       localStorage.removeItem('token');
-      state.currentUser = {};
+      state.currentUser = null;
     },
     updateCurrentCoordinates: function (state, coordinates) {
       state.currentCoordinates = {

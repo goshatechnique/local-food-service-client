@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <CreateProduct v-if="user !== null && user.accountType === 'Seller'" />
-    <div class="filters-header">Filters</div>
+    <div class="filters-header">Filters:</div>
     <input
       class="filters-input"
       v-model="searchString"
@@ -48,9 +48,11 @@ $linkColor: #28349b;
 $grayColorLight: #eeeeee;
 $grayColor: #e1e1e1;
 $grayColorDark: #757575;
-$greenColor: #3fba83;
+$greenColor: #47d1af;
 $greenColorLight: #bae6d5;
 $greenColorLight2: #c7ebdf;
+$greenColorLight3: #e3f9f5;
+$greenDark: #2e6d51;
 $orangeColor: #dba614;
 $redColor: #c42e1a;
 
@@ -60,6 +62,8 @@ $redColor: #c42e1a;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  background-color: $greenColorLight3;
+  border-right: 1px solid $greenColor;
 }
 
 .form-input-container {
@@ -75,12 +79,12 @@ $redColor: #c42e1a;
 }
 
 .filters-input {
-  height: 30px;
+  height: 35px;
   width: 90%;
   box-sizing: border-box;
-  border: none;
+  border: 1px solid $greenColor;
   outline: none;
-  border: 1px solid $greenColorLight;
   transition: 0.5s;
+  color: $textColor;
 }
 </style>
