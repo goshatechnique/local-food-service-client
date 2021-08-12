@@ -118,7 +118,7 @@ export default {
         this.currentCoordinates.lng
       ) {
         return {
-          ownerId: this.user.id,
+          ownerId: this.user._id,
           name: this.name,
           price: this.price,
           description: this.description,
@@ -228,7 +228,7 @@ $orangeColor: #dba614;
 $redColor: #c42e1a;
 
 .container {
-  margin: 25px 0 25px 0;
+  margin: 25px 0px 0px 0px;
   width: 100%;
 }
 
@@ -348,5 +348,26 @@ $redColor: #c42e1a;
 }
 
 .input-file {
+}
+
+@media all and (max-width: 1024px) {
+  .container-create-btn {
+    font-size: 0.9em;
+  }
+  .overlay {
+    &-background {
+      width: 360px;
+    }
+  }
+}
+
+@media all and (max-width: 768px) {
+  .container {
+    margin: 10px;
+    width: 100%;
+  }
+  .container-create-btn {
+    font-size: 0.8em;
+  }
 }
 </style>

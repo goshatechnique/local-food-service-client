@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import LoginForm from '../components/LoginForm.vue';
 import { mapGetters } from 'vuex';
+import LoginForm from '../components/LoginForm.vue';
 export default {
   name: 'Initial',
   components: {
@@ -15,9 +15,13 @@ export default {
   computed: {
     ...mapGetters(['user']),
   },
-  methods: {},
-  created() {
-    if (this.user !== null) this.$router.push('/home');
+  watch: {
+    user: {
+      immediate: true,
+      handler(value) {
+        if (value) this.$router.push({ path: '/home' });
+      },
+    },
   },
 };
 </script>

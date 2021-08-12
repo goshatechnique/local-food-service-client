@@ -9,9 +9,7 @@
         disabled
         :value="selectedProduct.description"
       />
-      <button class="background-button" @click="switchProductPopup">
-        HIDE DESCRIPTION
-      </button>
+      <div class="background-button" @click="switchProductPopup">&times;</div>
     </div>
   </div>
 </template>
@@ -71,6 +69,7 @@ $redColor: #c42e1a;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    position: relative;
   }
 }
 
@@ -92,24 +91,36 @@ $redColor: #c42e1a;
 }
 
 .background-button {
-  height: 55px;
-  width: 80%;
-  box-sizing: border-box;
-  border: none;
-  outline: none;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  font-size: 2em;
   transition: 0.5s;
-  border: 1px solid $greenColor;
-  color: $greenColor;
-  background-color: $whiteColor;
-  padding-left: 10px;
+  opacity: 1;
+  padding: 5px 10px;
+  user-select: none;
   cursor: pointer;
-  margin: 25px 0 25px 0;
   &:hover {
-    background-color: $greenColor;
-    border: 1px solid $whiteColor;
-    color: $whiteColor;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    opacity: 0.6;
   }
+  // height: 55px;
+  // width: 80%;
+  // box-sizing: border-box;
+  // border: none;
+  // outline: none;
+  // transition: 0.5s;
+  // border: 1px solid $greenColor;
+  // color: $greenColor;
+  // background-color: $whiteColor;
+  // padding-left: 10px;
+  // cursor: pointer;
+  // margin: 25px 0 25px 0;
+  // &:hover {
+  //   background-color: $greenColor;
+  //   border: 1px solid $whiteColor;
+  //   color: $whiteColor;
+  //   box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  // }
 }
 
 h1 {

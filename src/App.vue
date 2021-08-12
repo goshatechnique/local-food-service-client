@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import Header from './components/Header';
 import { getWithExpiry } from './helpers/helpers';
 
@@ -18,18 +18,9 @@ export default {
   methods: {
     ...mapActions(['fetchCurrentUser']),
   },
-  computed: {
-    ...mapGetters(['user']),
-  },
+
   mounted() {
     if (getWithExpiry('token')) this.fetchCurrentUser();
-  },
-  watch: {
-    user: function (value) {
-      if (value?.id !== undefined) {
-        this.$route.name === 'Home' ? null : this.$router.push('/home');
-      }
-    },
   },
 };
 </script>

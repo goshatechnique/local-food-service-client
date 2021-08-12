@@ -6,14 +6,23 @@
       :selectedProduct="selectedProduct"
     />
     <GmapMap
-      v-if="productsList.length > 0"
+      v-if="productsList && productsList.length > 0"
       :center="{
-        lat: this.currentCoordinates.lat,
-        lng: this.currentCoordinates.lng,
+        lat: 53.7169,
+        lng: 27.9775,
       }"
       :zoom="9"
       style="width: 100%"
+      @click="handleClick"
     >
+      <GmapMarker
+        :position="{
+          lat: this.currentCoordinates.lat,
+          lng: this.currentCoordinates.lng,
+        }"
+        :icon="yourLocation"
+      />
+
       <GmapMarker
         v-for="(product, index) in productsList"
         :key="index"
@@ -21,7 +30,7 @@
         @click="switchProductPopup(product)"
       />
     </GmapMap>
-    <div class="products-list">
+    <div class="products-list" @scroll="handleScroll">
       <Product
         v-for="(product, index) in productsList"
         :key="index"
@@ -42,6 +51,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import Product from './Product.vue';
 import ProductPopup from './ProductPopup.vue';
+import YourLocationImg from '../assets/svg/your-location.svg';
 export default {
   name: 'Marketplace',
   components: {
@@ -53,19 +63,12 @@ export default {
       highlightedItemId: '',
       isProductPopupVisible: false,
       selectedProduct: {},
+      yourLocation: YourLocationImg,
     };
   },
   methods: {
     ...mapActions(['fetchProducts']),
-    ...mapMutations(['updateCurrentCoordinates']),
-    getCurrentLocation: function () {
-      navigator.geolocation.getCurrentPosition(position => {
-        this.updateCurrentCoordinates({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      });
-    },
+    ...mapMutations(['updatePageNumber', 'updateCurrentCoordinates']),
     switchProductPopup: function (product) {
       this.selectedProduct = product;
       this.isProductPopupVisible = !this.isProductPopupVisible;
@@ -75,19 +78,47 @@ export default {
         this.highlightedItemId = '';
       }
     },
+    handleScroll: function (el) {
+      if (
+        el.srcElement.offsetHeight + el.srcElement.scrollTop >=
+        el.srcElement.scrollHeight
+      ) {
+        this.updatePageNumber(this.pageNumber + 1);
+      }
+    },
+    handleClick: function (data) {
+      this.updateCurrentCoordinates({
+        lat: data.latLng.lat(),
+        lng: data.latLng.lng(),
+      });
+    },
   },
   computed: {
-    ...mapGetters(['productsList', 'currentCoordinates']),
-  },
-  mounted() {
-    this.getCurrentLocation();
+    ...mapGetters([
+      'productsList',
+      'currentCoordinates',
+      'searchString',
+      'pageNumber',
+    ]),
   },
   watch: {
+    pageNumber: {
+      immediate: true,
+      handler(value) {
+        this.fetchProducts({
+          lat: this.currentCoordinates.lat,
+          lng: this.currentCoordinates.lng,
+          name: this.searchString,
+          pageNumber: value,
+        });
+      },
+    },
     currentCoordinates: function (value) {
       this.fetchProducts({
         lat: value.lat,
         lng: value.lng,
-        name: '',
+        name: this.searchString,
+        pageNumber: 1,
       });
     },
   },
@@ -104,5 +135,11 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
+}
+
+@media all and (max-width: 768px) {
+  .container {
+    grid-template-rows: 1fr 350px;
+  }
 }
 </style>

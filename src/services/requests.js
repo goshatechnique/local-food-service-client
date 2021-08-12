@@ -11,5 +11,12 @@ export default {
       lat: params.lat,
       lng: params.lng,
       name: params.name,
+      pageNumber: params.pageNumber,
+    }),
+  deleteProduct: id =>
+    api().delete('/product', {
+      data: {
+        id: id,
+      },
     }),
 };

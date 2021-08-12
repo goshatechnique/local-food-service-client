@@ -16,17 +16,25 @@
     ]"
   >
     <div class="name">{{ name }}, {{ price }}</div>
-    <div class="photo">
+    <div class="photo" @click.stop="deleteProductFn">
       <img :src="noImage" alt="#" class="photo-image" />
     </div>
     <div class="location">
       {{ location.name }}
     </div>
     <div class="description">{{ description }}</div>
+    <div
+      v-if="this.user._id === this.ownerId"
+      @click.stop="deleteProductFn"
+      class="delete"
+    >
+      &times;
+    </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
 import NoImageImg from '../assets/svg/no-image.png';
 export default {
   name: 'product',
@@ -35,6 +43,15 @@ export default {
       photo: 'Photo',
       noImage: NoImageImg,
     };
+  },
+  computed: {
+    ...mapGetters(['user']),
+  },
+  methods: {
+    ...mapActions(['deleteProduct']),
+    deleteProductFn: function () {
+      this.deleteProduct(this.id);
+    },
   },
   props: {
     name: {
@@ -79,6 +96,7 @@ $orangeColor: #dba614;
 $redColor: #c42e1a;
 
 .product-container {
+  position: relative;
   margin: 10px 10px 0 10px;
   height: 100px;
   display: grid;
@@ -141,5 +159,18 @@ $redColor: #c42e1a;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.delete {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  font-size: 1.5em;
+  transition: 0.5s;
+  opacity: 0.8;
+  padding: 5px 10px;
+  user-select: none;
+  &:hover {
+    opacity: 1;
+  }
 }
 </style>

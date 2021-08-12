@@ -2,8 +2,8 @@
   <div class="container">
     <div class="header-logo">Local food service</div>
     <div class="header-account" v-if="user">
-      <div>Hello, {{ this.user.email }}</div>
-      <img class="header-exit-btn" @click="logoutFn" :src="ExitImg" alt="#" />
+      <div class="header-account-text">Hello, {{ this.user.email }}</div>
+      <img class="header-exit-btn" @click="logout" :src="ExitImg" alt="#" />
     </div>
   </div>
 </template>
@@ -20,10 +20,6 @@ export default {
   },
   methods: {
     ...mapMutations(['logout']),
-    logoutFn: function () {
-      this.logout();
-      this.$router.push('/');
-    },
   },
   computed: {
     ...mapGetters(['user']),
@@ -88,6 +84,12 @@ $redColor: #c42e1a;
     margin-left: 20px;
     font-size: 1.3em;
   }
+  .header-account {
+    padding-right: 15px;
+    &-text {
+      font-size: 0.85em;
+    }
+  }
 }
 
 @media all and (max-width: 768px) {
@@ -95,12 +97,26 @@ $redColor: #c42e1a;
     margin-left: 15px;
     font-size: 1.1em;
   }
+  .header-account {
+    padding-right: 15px;
+    &-text {
+      font-size: 0.75em;
+    }
+  }
 }
 
 @media all and (max-width: 500px) {
   .header-logo {
     margin-left: 10px;
     font-size: 0.9em;
+    text-align: center;
+    min-width: 160px;
+  }
+  .header-account {
+    padding-right: 10px;
+    &-text {
+      font-size: 0.65em;
+    }
   }
 }
 </style>

@@ -91,7 +91,15 @@
       </div>
       <div class="form-switch-container">
         <div class="form-switch" @click="switchFormType">
-          {{ this.formType === 'registration' ? signInMessage : signUpMessage }}
+          <!-- {{ this.formType === 'registration' ? signInMessage : signUpMessage }} -->
+          <div class="form-switch-left-text">
+            {{
+              this.formType === 'registration' ? signInMessage : signUpMessage
+            }}
+          </div>
+          <div class="form-switch-right-text">
+            {{ this.formType === 'registration' ? 'Sign in' : 'Sign up' }}
+          </div>
         </div>
       </div>
     </form>
@@ -112,8 +120,8 @@ export default {
       phoneNumber: '',
       accountType: '',
       isEmailValid: false,
-      signInMessage: 'Already have an account? Sign in',
-      signUpMessage: 'Log in to start. Have no account? Sign up',
+      signInMessage: 'Already have an account? ',
+      signUpMessage: 'Log in to start. Have no account? ',
       warnMessage: '',
     };
   },
@@ -128,7 +136,11 @@ export default {
         return false;
       }
     },
+    validatePassword() {
+      return this.password.length > 5;
+    },
     validatePhoneNumber() {
+      if (this.formType === 'authorization') return true;
       if (this.phoneNumber === '') return;
       return this.phoneNumber.match(/\d/g) && this.phoneNumber.length === 9;
     },
@@ -137,26 +149,25 @@ export default {
         this.formType === 'registration' ? 'authorization' : 'registration';
     },
     submitHandler() {
+      if (!this.isEmailValid) {
+        this.warnMessage = 'Email not valid';
+        return;
+      }
+      if (!this.validatePassword()) {
+        this.warnMessage = 'Password is weak';
+        return;
+      }
+      if (!this.validatePhoneNumber()) {
+        this.warnMessage = 'Phone not valid';
+        return;
+      }
+      if (this.formType === 'authorization') {
+        this.authorization({ email: this.email, password: this.password });
+        this.warnMessage = '';
+        return;
+      }
       if (this.formType === 'registration') {
-        if (
-          this.email &&
-          this.password &&
-          this.country &&
-          this.city &&
-          this.phoneNumber &&
-          this.accountType
-        ) {
-          if (!this.isEmailValid) {
-            this.warnMessage = 'Email not valid';
-            return;
-          }
-          if (this.accountType === 'Seller' || this.phoneNumber !== '') {
-            if (!this.validatePhoneNumber()) {
-              this.warnMessage = 'Phone not valid';
-              return;
-            }
-          }
-          this.warnMessage = '';
+        if (this.country && this.city && this.accountType) {
           this.registration({
             email: this.email,
             password: this.password,
@@ -165,20 +176,11 @@ export default {
             phoneNumber: this.phoneNumber,
             accountType: this.accountType,
           });
-        } else {
-          this.warnMessage = 'Fill all fields';
-        }
-      }
-      if (this.formType === 'authorization') {
-        if (this.email && this.password) {
-          if (!this.isEmailValid) {
-            this.warnMessage = 'Email not valid';
-            return;
-          }
           this.warnMessage = '';
-          this.authorization({ email: this.email, password: this.password });
+          return;
         } else {
-          this.warnMessage = 'Fill all fields';
+          this.warnMessage = 'Fill all field';
+          return;
         }
       }
     },
@@ -196,6 +198,7 @@ $grayColorDark: #757575;
 $greenColor: #47d1af;
 $greenColorLight: #bae6d5;
 $greenColorLight2: #c7ebdf;
+$greenColorDark: #2e6d51;
 $orangeColor: #dba614;
 $redColor: #c42e1a;
 
@@ -287,11 +290,22 @@ $redColor: #c42e1a;
 }
 
 .form-switch {
-  font-size: 0.6em;
   cursor: pointer;
   transition: 0.5s;
-  &:hover {
-    color: $linkColor;
+  display: flex;
+  justify-content: center;
+  &-left-text {
+    font-size: 0.6em;
+  }
+  &-right-text {
+    color: $greenColor;
+    padding-left: 6px;
+    font-size: 0.6em;
+    transition: 0.5s;
+    font-weight: bold;
+    &:hover {
+      color: $greenColorDark;
+    }
   }
 }
 

@@ -5,8 +5,8 @@ const user = {
   state: {
     currentUser: null,
     currentCoordinates: {
-      lat: 0,
-      lng: 0,
+      lat: 53.7169,
+      lng: 27.9775,
     },
   },
   mutations: {
@@ -37,7 +37,7 @@ const user = {
       const { data } = await requests.authorization(userData);
       setWithExpiry('token', data.token);
       commit('updateCurrentUser', {
-        id: data?.user?._id,
+        _id: data?.user?._id,
         email: data?.user?.email,
         country: data?.user?.country,
         city: data?.user?.city,
@@ -47,7 +47,7 @@ const user = {
     fetchCurrentUser: async function ({ commit }) {
       try {
         const { data } = await requests.getUser();
-        commit('updateCurrentUser', data?.user);
+        commit('updateCurrentUser', data);
       } catch (error) {
         throw new Error('user.js fetchCurrentUser() | ', error);
       }

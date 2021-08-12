@@ -4,14 +4,14 @@
     <div class="filters-header">Filters:</div>
     <input
       class="filters-input"
-      v-model="searchString"
+      v-model="localSearchString"
       placeholder="Product name..."
     />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import CreateProduct from './CreateProduct';
 export default {
   name: 'Filters',
@@ -20,21 +20,27 @@ export default {
   },
   data() {
     return {
-      searchString: '',
+      localSearchString: '',
     };
   },
   computed: {
-    ...mapGetters(['user', 'currentCoordinates']),
+    ...mapGetters(['user', 'currentCoordinates', 'searchString', 'pageNumber']),
   },
   methods: {
     ...mapActions(['fetchProducts']),
+    ...mapMutations(['updateSearchString', 'updatePageNumber']),
   },
   watch: {
+    localSearchString: function (value) {
+      this.updateSearchString(value);
+    },
     searchString: function (value) {
+      this.updatePageNumber(1);
       this.fetchProducts({
         lat: this.currentCoordinates.lat,
         lng: this.currentCoordinates.lng,
         name: value,
+        pageNumber: this.pageNumber,
       });
     },
   },
@@ -86,5 +92,24 @@ $redColor: #c42e1a;
   outline: none;
   transition: 0.5s;
   color: $textColor;
+}
+
+@media all and (max-width: 1024px) {
+  .filters-input {
+    font-size: 0.9em;
+  }
+  .filters-header {
+    padding: 12px;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .filters-input {
+    font-size: 0.8em;
+    margin: 10px;
+  }
+  .filters-header {
+    padding: 6px;
+  }
 }
 </style>

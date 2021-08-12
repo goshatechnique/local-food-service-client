@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters } from 'vuex';
 import Filters from '../components/Filters.vue';
 import Marketplace from '../components/Marketplace.vue';
 export default {
@@ -18,15 +18,13 @@ export default {
   computed: {
     ...mapGetters(['user']),
   },
-  methods: {
-    ...mapMutations(['logout']),
-    logoutFn: function () {
-      this.logout();
-      this.$router.push('/');
+  watch: {
+    user: {
+      immediate: true,
+      handler(value) {
+        if (!value) this.$router.push({ path: '/' });
+      },
     },
-  },
-  mounted() {
-    if (this.user === null) this.$router.push('/');
   },
 };
 </script>
@@ -41,5 +39,21 @@ export default {
     'filters marketplace'
     'filters marketplace';
   overflow: hidden;
+}
+
+@media all and (max-width: 1024px) {
+  .home {
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .home {
+    grid-template-columns: minmax(360px, 1fr);
+    grid-auto-rows: 140px 1fr;
+    grid-template-areas:
+      'filters'
+      'marketplace';
+  }
 }
 </style>
