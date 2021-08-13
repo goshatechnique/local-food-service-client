@@ -47,7 +47,12 @@
             alt="#"
             class="location"
             title="Get current location"
-            @click="refreshLocation"
+            @click="
+              defineLocationByCoords(
+                currentCoordinates.lat,
+                currentCoordinates.lng,
+              )
+            "
           />
         </div>
         <textarea
@@ -83,7 +88,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import axios from 'axios';
 import LocationSvg from '../assets/svg/location.svg';
 export default {
@@ -97,10 +102,6 @@ export default {
       location: '',
       image: null,
       imageUrl: null,
-      currentCoordinates: {
-        lat: 0,
-        lng: 0,
-      },
       LocationImg: LocationSvg,
       isLocationUpdating: false,
       warnMessage: '',
@@ -108,6 +109,7 @@ export default {
   },
   methods: {
     ...mapActions(['postProduct']),
+    ...mapMutations(['updateCurrentCoordinates']),
     collectProductData: function () {
       if (
         this.name &&
@@ -146,13 +148,14 @@ export default {
         `https://maps.googleapis.com/maps/api/geocode/json?address=${this.location}&key=${process.env.VUE_APP_GOOGLE_API_KEY}`,
       );
       if (data.status === 'ZERO_RESULTS') {
-        this.currentCoordinates.lat = null;
-        this.currentCoordinates.lng = null;
+        this.updateCurrentCoordinates({ lat: null, lng: null });
         this.warnMessage = 'Incorrect location';
       }
       if (data.status === 'OK') {
-        this.currentCoordinates.lat = data.results[0].geometry.location.lat;
-        this.currentCoordinates.lng = data.results[0].geometry.location.lng;
+        this.updateCurrentCoordinates({
+          lat: data.results[0].geometry.location.lat,
+          lng: data.results[0].geometry.location.lng,
+        });
       }
       this.isLocationUpdating = false;
     },
@@ -172,27 +175,12 @@ export default {
           .join(' ');
       }
     },
-    getCurrentLocation: function () {
-      navigator.geolocation.getCurrentPosition(position => {
-        this.currentCoordinates = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        this.defineLocationByCoords(
-          position.coords.latitude,
-          position.coords.longitude,
-        );
-      });
-    },
     switchCreateProduct: function () {
       this.name = '';
       this.price = '';
       this.description = '';
       this.warnMessage = '';
       this.isCreateProductVisible = !this.isCreateProductVisible;
-    },
-    refreshLocation: function () {
-      this.getCurrentLocation();
     },
     pickImage() {
       const image = this.$refs.file.files[0];
@@ -201,12 +189,25 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['user']),
+    ...mapGetters(['user', 'currentCoordinates']),
   },
   watch: {
-    user: function (value) {
-      this.location = value.city + ', ' + value.country;
-      this.defineLocationByCity();
+    user: {
+      immediate: true,
+      handler(value) {
+        this.location = value.city + ', ' + value.country;
+        this.defineLocationByCity();
+      },
+    },
+    isCreateProductVisible: {
+      immediate: true,
+      handler(value) {
+        if (value)
+          this.defineLocationByCoords(
+            this.currentCoordinates.lat,
+            this.currentCoordinates.lng,
+          );
+      },
     },
   },
 };

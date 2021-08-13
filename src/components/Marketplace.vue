@@ -6,12 +6,12 @@
       :selectedProduct="selectedProduct"
     />
     <GmapMap
-      v-if="productsList && productsList.length > 0"
+      v-if="this.defaultMapCoordinates.lat && this.defaultMapCoordinates.lng"
       :center="{
-        lat: 53.7169,
-        lng: 27.9775,
+        lat: this.defaultMapCoordinates.lat,
+        lng: this.defaultMapCoordinates.lng,
       }"
-      :zoom="9"
+      :zoom="6"
       style="width: 100%"
       @click="handleClick"
     >
@@ -22,7 +22,6 @@
         }"
         :icon="yourLocation"
       />
-
       <GmapMarker
         v-for="(product, index) in productsList"
         :key="index"
@@ -43,6 +42,11 @@
         :highlightedItemId="highlightedItemId"
         :switchProductPopup="switchProductPopup"
       />
+      <div class="products-list-message" v-if="productsList.length === 0">
+        <h1 class="products-list-message-text">
+          We can't find any proposal in this area and near
+        </h1>
+      </div>
     </div>
   </div>
 </template>
@@ -64,6 +68,11 @@ export default {
       isProductPopupVisible: false,
       selectedProduct: {},
       yourLocation: YourLocationImg,
+      defaultMapCoordinates: {
+        lat: null,
+        lng: null,
+      },
+      isDefaultGetted: false,
     };
   },
   methods: {
@@ -87,6 +96,7 @@ export default {
       }
     },
     handleClick: function (data) {
+      this.updatePageNumber(1);
       this.updateCurrentCoordinates({
         lat: data.latLng.lat(),
         lng: data.latLng.lng(),
@@ -99,6 +109,7 @@ export default {
       'currentCoordinates',
       'searchString',
       'pageNumber',
+      'user',
     ]),
   },
   watch: {
@@ -113,13 +124,24 @@ export default {
         });
       },
     },
-    currentCoordinates: function (value) {
-      this.fetchProducts({
-        lat: value.lat,
-        lng: value.lng,
-        name: this.searchString,
-        pageNumber: 1,
-      });
+    currentCoordinates: {
+      immediate: true,
+      handler(value) {
+        if (value.lat === null && value.lng === null) {
+          return;
+        }
+        if (!this.isDefaultGetted) {
+          this.defaultMapCoordinates.lat = value.lat;
+          this.defaultMapCoordinates.lng = value.lng;
+          this.isDefaultGetted = true;
+        }
+        this.fetchProducts({
+          lat: value.lat,
+          lng: value.lng,
+          name: this.searchString,
+          pageNumber: 1,
+        });
+      },
     },
   },
 };
@@ -135,6 +157,14 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
+  &-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &-text {
+      padding: 10px;
+    }
+  }
 }
 
 @media all and (max-width: 768px) {
