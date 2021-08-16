@@ -28,26 +28,31 @@ const products = {
     updatePageNumber: function (state, value) {
       state.pageNumber = value;
     },
+    refreshProducts: function (state) {
+      state.productsList = [];
+      state.searchString = '';
+      state.pageNumber = 1;
+    },
   },
   actions: {
-    postProduct: async function ({ commit }, newProduct) {
+    postProduct: async function ({ commit }, productFormData) {
       try {
-        const response = await requests.postProduct(newProduct);
-        if (response.status === 201) commit('addProductManual', newProduct);
+        const response = await requests.postProduct(productFormData);
+        if (response.status === 201) commit('addProductManual', response.data);
       } catch (error) {
-        throw new Error('products.js postProduct() | ', error);
+        console.error('products.js postProduct() | ', error);
       }
     },
     fetchProducts: async function ({ commit }, params) {
       try {
         const response = await requests.getProducts(params);
-        if (response.status === 200)
-          commit('updateProductsList', {
-            products: response?.data?.products,
-            pageNumber: response?.data?.pageNumber,
-          });
+        // if (response.status === 200)
+        commit('updateProductsList', {
+          products: response?.data?.products,
+          pageNumber: response?.data?.pageNumber,
+        });
       } catch (error) {
-        throw new Error('products.js postProduct() | ', error);
+        console.error('products.js postProduct() | ', error);
       }
     },
     deleteProduct: async function ({ commit }, id) {

@@ -8,7 +8,14 @@
       @click="switchCreateProduct"
       class="overlay"
     >
-      <div @click.stop class="overlay-background">
+      <form
+        @click.stop
+        class="overlay-background"
+        enctype="multipart/form-data"
+        @submit.prevent="createProduct"
+        action="/product-create"
+        method="post"
+      >
         <h1>Create product:</h1>
         <div class="overlay-alert">
           <div class="overlay-alert-text">{{ this.warnMessage }}</div>
@@ -42,18 +49,6 @@
             placeholder="location"
             @change="defineLocationByCity"
           />
-          <img
-            :src="LocationImg"
-            alt="#"
-            class="location"
-            title="Get current location"
-            @click="
-              defineLocationByCoords(
-                currentCoordinates.lat,
-                currentCoordinates.lng,
-              )
-            "
-          />
         </div>
         <textarea
           v-bind:class="[
@@ -64,25 +59,33 @@
           v-model="description"
           placeholder="Type description"
         />
-        <!-- <div class="image-container">
+        <div>
           <img class="image" v-if="imageUrl" :src="imageUrl" />
         </div>
-        <input
-          class="input-file"
-          type="file"
-          name="image"
-          ref="file"
-          accept="image/*"
-          @change="pickImage"
-        /> -->
-        <button
-          @click="createProduct"
-          :disabled="isLocationUpdating"
-          class="button"
+        <div
+          v-bind:class="[
+            warnMessage && imageUrl === ''
+              ? 'input-file-background-warning'
+              : '',
+            'input-file-background',
+          ]"
         >
-          Create
+          <input
+            class="input-file"
+            type="file"
+            name="file"
+            id="file"
+            ref="file"
+            accept="image/*"
+            @change="pickImage"
+          />
+          <label class="input-file-label" for="file"> PICK IMAGE </label>
+        </div>
+
+        <button class="button" :disabled="isLocationUpdating" type="submit">
+          CREATE PRODUCT
         </button>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -90,7 +93,6 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import axios from 'axios';
-import LocationSvg from '../assets/svg/location.svg';
 export default {
   name: 'CreateProduct',
   data() {
@@ -101,8 +103,7 @@ export default {
       description: '',
       location: '',
       image: null,
-      imageUrl: null,
-      LocationImg: LocationSvg,
+      imageUrl: '',
       isLocationUpdating: false,
       warnMessage: '',
     };
@@ -117,18 +118,26 @@ export default {
         this.description &&
         this.location &&
         this.currentCoordinates.lat &&
-        this.currentCoordinates.lng
+        this.currentCoordinates.lng &&
+        this.image
       ) {
-        return {
-          ownerId: this.user._id,
-          name: this.name,
-          price: this.price,
-          description: this.description,
-          location: Object.assign(
-            { name: this.location },
-            this.currentCoordinates,
-          ),
-        };
+        const imageData = new FormData();
+        imageData.append('file', this.image);
+        imageData.append(
+          'product',
+          JSON.stringify({
+            ownerId: this.user._id,
+            name: this.name,
+            price: this.price,
+            phoneNumber: this.user.phoneNumber,
+            description: this.description,
+            location: Object.assign(
+              { name: this.location },
+              this.currentCoordinates,
+            ),
+          }),
+        );
+        return imageData;
       } else {
         this.warnMessage = 'Fill all fields!';
       }
@@ -147,11 +156,11 @@ export default {
       const { data } = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${this.location}&key=${process.env.VUE_APP_GOOGLE_API_KEY}`,
       );
-      if (data.status === 'ZERO_RESULTS') {
+      if (data?.status === 'ZERO_RESULTS') {
         this.updateCurrentCoordinates({ lat: null, lng: null });
         this.warnMessage = 'Incorrect location';
       }
-      if (data.status === 'OK') {
+      if (data?.status === 'OK') {
         this.updateCurrentCoordinates({
           lat: data.results[0].geometry.location.lat,
           lng: data.results[0].geometry.location.lng,
@@ -168,11 +177,10 @@ export default {
           '&sensor=false&key=' +
           process.env.VUE_APP_GOOGLE_API_KEY,
       );
-      if (data.status === 'OK') {
-        this.location = data.plus_code.compound_code
-          .split(' ')
-          .slice(1)
-          .join(' ');
+      if (data?.status === 'OK') {
+        this.location = data?.plus_code?.compound_code?.includes(' ')
+          ? data?.plus_code?.compound_code?.split(' ').slice(1).join(' ')
+          : data?.results[0].formatted_address;
       }
     },
     switchCreateProduct: function () {
@@ -180,6 +188,8 @@ export default {
       this.price = '';
       this.description = '';
       this.warnMessage = '';
+      this.image = null;
+      this.imageUrl = '';
       this.isCreateProductVisible = !this.isCreateProductVisible;
     },
     pickImage() {
@@ -314,11 +324,45 @@ $redColor: #c42e1a;
   }
 }
 
-.location {
-  width: 30px;
-  cursor: pointer;
+.input-file {
+  opacity: 0;
+  visibility: hidden;
   position: absolute;
-  right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 35px;
+  &-background {
+    width: 80%;
+    height: 55px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    transition: 0.5s;
+    background-color: $greenColor;
+    border: 1px solid $greenColor;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $whiteColor;
+    cursor: pointer;
+    &:hover {
+      border: 1px solid $greenColor;
+      color: $greenColor;
+      background-color: $whiteColor;
+    }
+    &-warning {
+      border-bottom: 1px solid $orangeColor;
+    }
+  }
+  &-label {
+    cursor: pointer;
+    color: inherit;
+    &:hover {
+      color: inherit;
+    }
+  }
 }
 
 .button {
@@ -344,11 +388,6 @@ $redColor: #c42e1a;
 .image {
   width: 200px;
   height: 200px;
-  &-container {
-  }
-}
-
-.input-file {
 }
 
 @media all and (max-width: 1024px) {

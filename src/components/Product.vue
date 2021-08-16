@@ -1,30 +1,25 @@
 <template>
   <div
-    @click="
-      switchProductPopup({
-        name,
-        price,
-        location,
-        description,
-        ownerId,
-        _id: id,
-      })
-    "
-    v-bind:class="[
-      id === highlightedItemId ? 'product-container-highlighted' : '',
-      'product-container',
-    ]"
+    @click="switchProductPopup(product)"
+    v-bind:class="{
+      'product-container-highlighted': product._id === highlightedItemId,
+      'product-container': true,
+    }"
   >
-    <div class="name">{{ name }}, {{ price }}</div>
-    <div class="photo" @click.stop="deleteProductFn">
-      <img :src="noImage" alt="#" class="photo-image" />
+    <div class="name">{{ product.name }}, {{ product.price }}</div>
+    <div class="photo">
+      <img
+        :src="decodedImage ? 'data:image/png;base64,' + decodedImage : noImage"
+        alt="#"
+        class="photo-image"
+      />
     </div>
     <div class="location">
-      {{ location.name }}
+      {{ product.location.name }}
     </div>
-    <div class="description">{{ description }}</div>
+    <div class="description">{{ product.description }}</div>
     <div
-      v-if="this.user._id === this.ownerId"
+      v-if="product.ownerId === user._id"
       @click.stop="deleteProductFn"
       class="delete"
     >
@@ -35,13 +30,14 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import NoImageImg from '../assets/svg/no-image.png';
+import { arrayBufferToBase64 } from '../helpers/helpers';
+import NoImagePng from '../../public/no-image.png';
 export default {
   name: 'product',
   data() {
     return {
-      photo: 'Photo',
-      noImage: NoImageImg,
+      noImage: NoImagePng,
+      decodedImage: null,
     };
   },
   computed: {
@@ -50,27 +46,12 @@ export default {
   methods: {
     ...mapActions(['deleteProduct']),
     deleteProductFn: function () {
-      this.deleteProduct(this.id);
+      this.deleteProduct(this.product._id);
     },
   },
   props: {
-    name: {
-      type: String,
-    },
-    price: {
-      type: String,
-    },
-    location: {
+    product: {
       type: Object,
-    },
-    description: {
-      type: String,
-    },
-    id: {
-      type: String,
-    },
-    ownerId: {
-      type: String,
     },
     highlightedItemId: {
       type: String,
@@ -78,6 +59,17 @@ export default {
     switchProductPopup: {
       type: Function,
     },
+  },
+  mounted() {
+    try {
+      this.decodedImage =
+        typeof this.product.image?.data === 'string'
+          ? this.product.image.data
+          : arrayBufferToBase64(this.product.image.data.data);
+    } catch (error) {
+      this.decodedImage = null;
+      console.error('Product.js mounted() | Error: ', error);
+    }
   },
 };
 </script>

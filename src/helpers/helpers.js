@@ -20,3 +20,22 @@ export function getWithExpiry(key) {
   }
   return item.value;
 }
+
+export function arrayBufferToBase64(buffer) {
+  var binary = '';
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
+export function formatStringToPhoneNumber(number) {
+  const numberString = String(number);
+  const code = numberString.slice(0, 2);
+  const firstPart = numberString.slice(2, 5);
+  const secondPart = numberString.slice(5, 7);
+  const thirdPart = numberString.slice(7, 9);
+  return '(' + code + ')-' + firstPart + '-' + secondPart + '-' + thirdPart;
+}

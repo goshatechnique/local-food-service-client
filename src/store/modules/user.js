@@ -16,6 +16,10 @@ const user = {
     logout: function (state) {
       localStorage.removeItem('token');
       state.currentUser = null;
+      state.currentCoordinates = {
+        lat: 53.7169,
+        lng: 27.9775,
+      };
     },
     updateCurrentCoordinates: function (state, coordinates) {
       state.currentCoordinates = {
@@ -39,6 +43,7 @@ const user = {
       commit('updateCurrentUser', {
         _id: data?.user?._id,
         email: data?.user?.email,
+        phoneNumber: data?.user?.phoneNumber,
         country: data?.user?.country,
         city: data?.user?.city,
         accountType: data?.user?.accountType,
@@ -49,13 +54,14 @@ const user = {
         const { data } = await requests.getUser();
         commit('updateCurrentUser', data);
       } catch (error) {
-        throw new Error('user.js fetchCurrentUser() | ', error);
+        console.error('user.js fetchCurrentUser() | ', error);
       }
     },
   },
   getters: {
     user: state => state.currentUser,
     currentCoordinates: state => state.currentCoordinates,
+    users: state => state.users,
   },
 };
 

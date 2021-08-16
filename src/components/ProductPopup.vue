@@ -1,26 +1,36 @@
 <template>
   <div class="overlay" @click="switchProductPopup">
-    <div @click.stop class="overlay-background">
-      <img :src="noImage" alt="#" class="background-image" />
-      <h1>{{ selectedProduct.name }}, {{ selectedProduct.price }}</h1>
-      <h4>{{ selectedProduct.location.name }}</h4>
-      <textarea
-        class="background-description"
-        disabled
-        :value="selectedProduct.description"
+    <div @click.stop class="overlay-product">
+      <img
+        :src="decodedImage ? 'data:image/png;base64,' + decodedImage : noImage"
+        :alt="'#'"
+        class="product-image"
       />
-      <div class="background-button" @click="switchProductPopup">&times;</div>
+      <div class="product-name-price">
+        {{ selectedProduct.name }}, {{ selectedProduct.price }}
+      </div>
+      <div class="product-location">{{ selectedProduct.location.name }}</div>
+      <div class="product-phone">{{ this.formattedPhoneNumber }}</div>
+      <div class="product-description">
+        {{ selectedProduct.description }}
+      </div>
+      <div class="product-button" @click="switchProductPopup">&times;</div>
     </div>
   </div>
 </template>
 
 <script>
-import NoImageImg from '../assets/svg/no-image.png';
+import {
+  arrayBufferToBase64,
+  formatStringToPhoneNumber,
+} from '../helpers/helpers';
+import NoImagePng from '../../public/no-image.png';
 export default {
   name: 'ProductPopup',
   data: function () {
     return {
-      noImage: NoImageImg,
+      noImage: NoImagePng,
+      decodedImage: null,
     };
   },
   props: {
@@ -30,6 +40,22 @@ export default {
     switchProductPopup: {
       type: Function,
     },
+  },
+  computed: {
+    formattedPhoneNumber: function () {
+      return formatStringToPhoneNumber(this.selectedProduct.phoneNumber);
+    },
+  },
+  mounted() {
+    try {
+      this.decodedImage =
+        typeof this.selectedProduct?.image?.data === 'string'
+          ? this.selectedProduct.image.data
+          : arrayBufferToBase64(this.selectedProduct.image.data.data);
+    } catch (error) {
+      this.decodedImage = null;
+      console.error('ProductPopup.js mounted() | Error: ', error);
+    }
   },
 };
 </script>
@@ -61,7 +87,7 @@ $redColor: #c42e1a;
   display: flex;
   justify-content: center;
   align-items: center;
-  &-background {
+  &-product {
     width: 360px;
     background-color: $greenColor;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
@@ -73,24 +99,45 @@ $redColor: #c42e1a;
   }
 }
 
-.background-image {
+.product-image {
   padding-top: 20px;
   width: 200px;
   height: 200px;
 }
 
-.background-description {
+.product-name-price {
+  font-size: 1.2em;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.product-location {
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.product-phone {
+  font-size: 0.9em;
+}
+
+.product-description {
+  font-size: 0.82em;
+  padding: 10px;
   resize: none;
   width: 90%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  // white-space: nowrap;
   border: none;
   outline: none;
   background-color: $greenColor;
+  display: inline;
+  max-height: 100px;
+  word-wrap: break-word;
 }
 
-.background-button {
+.product-button {
   position: absolute;
   right: 0px;
   top: 0px;
@@ -103,35 +150,5 @@ $redColor: #c42e1a;
   &:hover {
     opacity: 0.6;
   }
-  // height: 55px;
-  // width: 80%;
-  // box-sizing: border-box;
-  // border: none;
-  // outline: none;
-  // transition: 0.5s;
-  // border: 1px solid $greenColor;
-  // color: $greenColor;
-  // background-color: $whiteColor;
-  // padding-left: 10px;
-  // cursor: pointer;
-  // margin: 25px 0 25px 0;
-  // &:hover {
-  //   background-color: $greenColor;
-  //   border: 1px solid $whiteColor;
-  //   color: $whiteColor;
-  //   box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-  // }
-}
-
-h1 {
-  font-size: 1.2em;
-}
-
-h4 {
-  font-size: 0.9em;
-}
-
-p {
-  font-size: 0.8em;
 }
 </style>

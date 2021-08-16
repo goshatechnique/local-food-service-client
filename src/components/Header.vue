@@ -3,23 +3,26 @@
     <div class="header-logo">Local food service</div>
     <div class="header-account" v-if="user">
       <div class="header-account-text">Hello, {{ this.user.email }}</div>
-      <img class="header-exit-btn" @click="logout" :src="ExitImg" alt="#" />
+      <img
+        class="header-exit-btn"
+        @click="logoutFn"
+        src="../../public/exit.svg"
+        alt="#"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import ExitSvg from '../assets/svg/exit.svg';
 export default {
   name: 'Header',
-  data() {
-    return {
-      ExitImg: ExitSvg,
-    };
-  },
   methods: {
-    ...mapMutations(['logout']),
+    ...mapMutations(['logout', 'refreshProducts']),
+    logoutFn: function () {
+      this.logout();
+      this.refreshProducts();
+    },
   },
   computed: {
     ...mapGetters(['user']),

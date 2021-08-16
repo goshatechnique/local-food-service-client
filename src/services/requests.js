@@ -3,9 +3,19 @@ import api from './api';
 export default {
   registration: userData => api().post('/registration', userData),
   authorization: userData => api().post('/authorization', userData),
-  delete: id => api().delete('/delete', id),
+  deleteUser: id =>
+    api().delete('/delete', {
+      data: {
+        id: id,
+      },
+    }),
   getUser: () => api().get('/user'),
-  postProduct: product => api().post('/product-create', product),
+  postProduct: product =>
+    api().post('/product-create', product, {
+      headers: {
+        'Content-Type': 'multipart/form-data; charset=utf-8;',
+      },
+    }),
   getProducts: params =>
     api().post('/products', {
       lat: params.lat,

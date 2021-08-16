@@ -17,8 +17,12 @@
     >
       <GmapMarker
         :position="{
-          lat: this.currentCoordinates.lat,
-          lng: this.currentCoordinates.lng,
+          lat: isLocationChanged
+            ? this.currentCoordinates.lat
+            : this.defaultMapCoordinates.lat,
+          lng: isLocationChanged
+            ? this.currentCoordinates.lng
+            : this.defaultMapCoordinates.lng,
         }"
         :icon="yourLocation"
       />
@@ -31,14 +35,9 @@
     </GmapMap>
     <div class="products-list" @scroll="handleScroll">
       <Product
-        v-for="(product, index) in productsList"
-        :key="index"
-        :name="product.name"
-        :price="product.price"
-        :location="product.location"
-        :description="product.description"
-        :id="product._id"
-        :ownerId="product.ownerId"
+        v-for="product in productsList"
+        :key="product._id"
+        :product="product"
         :highlightedItemId="highlightedItemId"
         :switchProductPopup="switchProductPopup"
       />
@@ -53,9 +52,11 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
+import axios from 'axios';
 import Product from './Product.vue';
 import ProductPopup from './ProductPopup.vue';
-import YourLocationImg from '../assets/svg/your-location.svg';
+import YourLocationImg from '../../public/your-location.svg';
+
 export default {
   name: 'Marketplace',
   components: {
@@ -69,10 +70,10 @@ export default {
       selectedProduct: {},
       yourLocation: YourLocationImg,
       defaultMapCoordinates: {
-        lat: null,
-        lng: null,
+        lat: 53,
+        lng: 27,
       },
-      isDefaultGetted: false,
+      isLocationChanged: false,
     };
   },
   methods: {
@@ -96,11 +97,24 @@ export default {
       }
     },
     handleClick: function (data) {
+      this.isLocationChanged = true;
       this.updatePageNumber(1);
       this.updateCurrentCoordinates({
         lat: data.latLng.lat(),
         lng: data.latLng.lng(),
       });
+    },
+    defineLocationByCity: async function () {
+      const { data } = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${
+          this.user.country + ', ' + this.user.city
+        }&key=${process.env.VUE_APP_GOOGLE_API_KEY}`,
+      );
+      if (data.status === 'OK') {
+        const value = data.results[0].geometry.location;
+        this.defaultMapCoordinates.lat = value.lat;
+        this.defaultMapCoordinates.lng = value.lng;
+      }
     },
   },
   computed: {
@@ -130,17 +144,18 @@ export default {
         if (value.lat === null && value.lng === null) {
           return;
         }
-        if (!this.isDefaultGetted) {
-          this.defaultMapCoordinates.lat = value.lat;
-          this.defaultMapCoordinates.lng = value.lng;
-          this.isDefaultGetted = true;
-        }
         this.fetchProducts({
           lat: value.lat,
           lng: value.lng,
           name: this.searchString,
           pageNumber: 1,
         });
+      },
+    },
+    user: {
+      immediate: true,
+      handler(value) {
+        if (value) this.defineLocationByCity();
       },
     },
   },
