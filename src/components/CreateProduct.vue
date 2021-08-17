@@ -1,13 +1,7 @@
 <template>
   <div class="container">
-    <button class="container-create-btn" @click="switchCreateProduct">
-      CREATE PRODUCT
-    </button>
-    <div
-      v-if="isCreateProductVisible"
-      @click="switchCreateProduct"
-      class="overlay"
-    >
+    <button class="container-create-btn" @click="switchCreateProduct">CREATE PRODUCT</button>
+    <div v-if="isCreateProductVisible" @click="switchCreateProduct" class="overlay">
       <form
         @click.stop
         class="overlay-background"
@@ -20,30 +14,11 @@
         <div class="overlay-alert">
           <div class="overlay-alert-text">{{ this.warnMessage }}</div>
         </div>
-        <input
-          v-bind:class="[
-            warnMessage && name === '' ? 'input-warning' : '',
-            'input',
-          ]"
-          type="text"
-          v-model="name"
-          placeholder="Product name"
-        />
-        <input
-          v-bind:class="[
-            warnMessage && price === '' ? 'input-warning' : '',
-            'input',
-          ]"
-          type="text"
-          v-model="price"
-          placeholder="Product price"
-        />
+        <input v-bind:class="[warnMessage && name === '' ? 'input-warning' : '', 'input']" type="text" v-model="name" placeholder="Product name" />
+        <input v-bind:class="[warnMessage && price === '' ? 'input-warning' : '', 'input']" type="text" v-model="price" placeholder="Product price" />
         <div class="input-background">
           <input
-            v-bind:class="[
-              warnMessage && location === '' ? 'input-warning' : '',
-              'input',
-            ]"
+            v-bind:class="[warnMessage && location === '' ? 'input-warning' : '', 'input']"
             type="text"
             v-model="location"
             placeholder="location"
@@ -51,10 +26,7 @@
           />
         </div>
         <textarea
-          v-bind:class="[
-            warnMessage && description === '' ? 'input-warning' : '',
-            'input input-textarea',
-          ]"
+          v-bind:class="[warnMessage && description === '' ? 'input-warning' : '', 'input input-textarea']"
           type="text"
           v-model="description"
           placeholder="Type description"
@@ -62,29 +34,12 @@
         <div>
           <img class="image" v-if="imageUrl" :src="imageUrl" />
         </div>
-        <div
-          v-bind:class="[
-            warnMessage && imageUrl === ''
-              ? 'input-file-background-warning'
-              : '',
-            'input-file-background',
-          ]"
-        >
-          <input
-            class="input-file"
-            type="file"
-            name="file"
-            id="file"
-            ref="file"
-            accept="image/*"
-            @change="pickImage"
-          />
+        <div v-bind:class="[warnMessage && imageUrl === '' ? 'input-file-background-warning' : '', 'input-file-background']">
+          <input class="input-file" type="file" name="file" id="file" ref="file" accept="image/*" @change="pickImage" />
           <label class="input-file-label" for="file"> PICK IMAGE </label>
         </div>
 
-        <button class="button" :disabled="isLocationUpdating" type="submit">
-          CREATE PRODUCT
-        </button>
+        <button class="button" :disabled="isLocationUpdating" type="submit">CREATE PRODUCT</button>
       </form>
     </div>
   </div>
@@ -112,15 +67,7 @@ export default {
     ...mapActions(['postProduct']),
     ...mapMutations(['updateCurrentCoordinates']),
     collectProductData: function () {
-      if (
-        this.name &&
-        this.price &&
-        this.description &&
-        this.location &&
-        this.currentCoordinates.lat &&
-        this.currentCoordinates.lng &&
-        this.image
-      ) {
+      if (this.name && this.price && this.description && this.location && this.currentCoordinates.lat && this.currentCoordinates.lng && this.image) {
         const imageData = new FormData();
         imageData.append('file', this.image);
         imageData.append(
@@ -131,10 +78,7 @@ export default {
             price: this.price,
             phoneNumber: this.user.phoneNumber,
             description: this.description,
-            location: Object.assign(
-              { name: this.location },
-              this.currentCoordinates,
-            ),
+            location: Object.assign({ name: this.location }, this.currentCoordinates),
           }),
         );
         return imageData;
@@ -151,36 +95,39 @@ export default {
       }
     },
     defineLocationByCity: async function () {
-      if (this.location === '') return;
-      this.isLocationUpdating = true;
-      const { data } = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${this.location}&key=${process.env.VUE_APP_GOOGLE_API_KEY}`,
-      );
-      if (data?.status === 'ZERO_RESULTS') {
-        this.updateCurrentCoordinates({ lat: null, lng: null });
-        this.warnMessage = 'Incorrect location';
+      try {
+        if (this.location === '') return;
+        this.isLocationUpdating = true;
+        const { data } = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${this.location}&key=${process.env.VUE_APP_GOOGLE_API_KEY}`,
+        );
+        if (data?.status === 'ZERO_RESULTS') {
+          this.updateCurrentCoordinates({ lat: null, lng: null });
+          this.warnMessage = 'Incorrect location';
+        }
+        if (data?.status === 'OK') {
+          this.updateCurrentCoordinates({
+            lat: data.results[0].geometry.location.lat,
+            lng: data.results[0].geometry.location.lng,
+          });
+        }
+        this.isLocationUpdating = false;
+      } catch (error) {
+        console.error('CreateProduct.js defineLocationByCity() | Error: ', error);
       }
-      if (data?.status === 'OK') {
-        this.updateCurrentCoordinates({
-          lat: data.results[0].geometry.location.lat,
-          lng: data.results[0].geometry.location.lng,
-        });
-      }
-      this.isLocationUpdating = false;
     },
     defineLocationByCoords: async function (lat, lng) {
-      const { data } = await axios.get(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
-          lat +
-          ',' +
-          lng +
-          '&sensor=false&key=' +
-          process.env.VUE_APP_GOOGLE_API_KEY,
-      );
-      if (data?.status === 'OK') {
-        this.location = data?.plus_code?.compound_code?.includes(' ')
-          ? data?.plus_code?.compound_code?.split(' ').slice(1).join(' ')
-          : data?.results[0].formatted_address;
+      try {
+        const { data } = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&sensor=false&key=${process.env.VUE_APP_GOOGLE_API_KEY}`,
+        );
+        if (data?.status === 'OK') {
+          this.location = data?.plus_code?.compound_code?.includes(' ')
+            ? data?.plus_code?.compound_code?.split(' ').slice(1).join(' ')
+            : data?.results[0].formatted_address;
+        }
+      } catch (error) {
+        console.error('CreateProduct.js defineLocationByCoords() | Error: ', error);
       }
     },
     switchCreateProduct: function () {
@@ -212,11 +159,7 @@ export default {
     isCreateProductVisible: {
       immediate: true,
       handler(value) {
-        if (value)
-          this.defineLocationByCoords(
-            this.currentCoordinates.lat,
-            this.currentCoordinates.lng,
-          );
+        if (value) this.defineLocationByCoords(this.currentCoordinates.lat, this.currentCoordinates.lng);
       },
     },
   },

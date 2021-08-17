@@ -2,16 +2,12 @@
   <div class="container">
     <CreateProduct v-if="user !== null && user.accountType === 'Seller'" />
     <div class="filters-header">Filters:</div>
-    <input
-      class="filters-input"
-      v-model="localSearchString"
-      placeholder="Product name..."
-    />
+    <input class="filters-input" v-debounce:500ms="fetchProducts" type="text" placeholder="Product name..." />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import CreateProduct from './CreateProduct';
 export default {
   name: 'Filters',
@@ -24,43 +20,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['user', 'currentCoordinates', 'searchString', 'pageNumber']),
+    ...mapGetters(['user']),
   },
   methods: {
-    ...mapActions(['fetchProducts']),
     ...mapMutations(['updateSearchString', 'updatePageNumber']),
-  },
-  watch: {
-    localSearchString: function (value) {
-      this.updateSearchString(value);
-    },
-    searchString: function (value) {
+    fetchProducts: function (value) {
       this.updatePageNumber(1);
-      this.fetchProducts({
-        lat: this.currentCoordinates.lat,
-        lng: this.currentCoordinates.lng,
-        name: value,
-        pageNumber: this.pageNumber,
-      });
+      this.updateSearchString(value);
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-$textColor: #314252;
-$whiteColor: #ffffff;
-$linkColor: #28349b;
-$grayColorLight: #eeeeee;
-$grayColor: #e1e1e1;
-$grayColorDark: #757575;
-$greenColor: #47d1af;
-$greenColorLight: #bae6d5;
-$greenColorLight2: #c7ebdf;
-$greenColorLight3: #e3f9f5;
-$greenDark: #2e6d51;
-$orangeColor: #dba614;
-$redColor: #c42e1a;
+@import '../styles/colors.scss';
 
 .container {
   grid-area: filters;

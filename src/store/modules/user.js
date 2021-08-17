@@ -61,7 +61,6 @@ const user = {
   getters: {
     user: state => state.currentUser,
     currentCoordinates: state => state.currentCoordinates,
-    users: state => state.users,
   },
 };
 

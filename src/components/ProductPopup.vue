@@ -1,29 +1,20 @@
 <template>
-  <div class="overlay" @click="switchProductPopup">
+  <div class="overlay" @click="$emit('switchProductPopup')">
     <div @click.stop class="overlay-product">
-      <img
-        :src="decodedImage ? 'data:image/png;base64,' + decodedImage : noImage"
-        :alt="'#'"
-        class="product-image"
-      />
-      <div class="product-name-price">
-        {{ selectedProduct.name }}, {{ selectedProduct.price }}
-      </div>
+      <img :src="decodedImage ? 'data:image/png;base64,' + decodedImage : noImage" :alt="'#'" class="product-image" />
+      <div class="product-name-price">{{ selectedProduct.name }}, {{ selectedProduct.price }}</div>
       <div class="product-location">{{ selectedProduct.location.name }}</div>
       <div class="product-phone">{{ this.formattedPhoneNumber }}</div>
       <div class="product-description">
         {{ selectedProduct.description }}
       </div>
-      <div class="product-button" @click="switchProductPopup">&times;</div>
+      <div class="product-button" @click="$emit('switchProductPopup')">&times;</div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  arrayBufferToBase64,
-  formatStringToPhoneNumber,
-} from '../helpers/helpers';
+import { arrayBufferToBase64, formatStringToPhoneNumber } from '../helpers/helpers';
 import NoImagePng from '../../public/no-image.png';
 export default {
   name: 'ProductPopup',
@@ -36,9 +27,6 @@ export default {
   props: {
     selectedProduct: {
       type: Object,
-    },
-    switchProductPopup: {
-      type: Function,
     },
   },
   computed: {
@@ -61,19 +49,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$textColor: #314252;
-$whiteColor: #ffffff;
-$linkColor: #28349b;
-$grayColorLight: #eeeeee;
-$grayColor: #e1e1e1;
-$grayColorDark: #757575;
-$greenColor: #47d1af;
-$greenColorLight: #bae6d5;
-$greenColorLight2: #c7ebdf;
-$greenColorLight3: #e3f9f5;
-$greenColorDark: #2e6d51;
-$orangeColor: #dba614;
-$redColor: #c42e1a;
+@import '../styles/colors.scss';
 
 .overlay {
   z-index: 2;

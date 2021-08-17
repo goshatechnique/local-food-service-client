@@ -75,17 +75,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$textColor: #314252;
-$whiteColor: #ffffff;
-$linkColor: #28349b;
-$grayColorLight: #eeeeee;
-$grayColor: #e1e1e1;
-$grayColorDark: #757575;
-$greenColor: #47d1af;
-$greenColorLight: #bae6d5;
-$greenColorLight2: #c7ebdf;
-$orangeColor: #dba614;
-$redColor: #c42e1a;
+@import '../styles/colors.scss';
 
 .product-container {
   position: relative;

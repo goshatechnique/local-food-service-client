@@ -26,8 +26,7 @@ export default {
 </script>
 
 <style lang="scss">
-$textColor: #314252;
-$greenColor: #47d1af;
+@import './styles/colors.scss';
 
 * {
   font-family: 'Courier New', Courier, monospace;

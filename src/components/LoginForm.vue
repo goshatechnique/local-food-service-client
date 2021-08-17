@@ -8,11 +8,11 @@
       </div>
       <div class="form-input-container">
         <input
-          v-bind:class="[
-            warnMessage && email === '' ? 'input-warning' : '',
-            isEmailValid === false && email !== '' ? 'input-warning' : '',
-            'form-input-container-background form-input-container-background-input',
-          ]"
+          v-bind:class="{
+            'input-warning':
+              (warnMessage && email === '') || (!isEmailValid && email !== ''),
+            'form-input-container-background form-input-container-background-input': true,
+          }"
           type="email"
           v-model="email"
           placeholder="email"
@@ -21,10 +21,10 @@
       </div>
       <div class="form-input-container">
         <input
-          v-bind:class="[
-            warnMessage && password === '' ? 'input-warning' : '',
-            'form-input-container-background form-input-container-background-input',
-          ]"
+          v-bind:class="{
+            'input-warning': warnMessage && password.length < 6,
+            'form-input-container-background form-input-container-background-input': true,
+          }"
           type="password"
           v-model="password"
           placeholder="password"
@@ -32,10 +32,10 @@
       </div>
       <div v-if="formType === 'registration'" class="form-input-container">
         <input
-          v-bind:class="[
-            warnMessage && country === '' ? 'input-warning' : '',
-            'form-input-container-background form-input-container-background-input',
-          ]"
+          v-bind:class="{
+            'input-warning': warnMessage && country === '',
+            'form-input-container-background form-input-container-background-input': true,
+          }"
           type="text"
           v-model="country"
           placeholder="country"
@@ -43,10 +43,10 @@
       </div>
       <div v-if="formType === 'registration'" class="form-input-container">
         <input
-          v-bind:class="[
-            warnMessage && city === '' ? 'input-warning' : '',
-            'form-input-container-background form-input-container-background-input',
-          ]"
+          v-bind:class="{
+            'input-warning': warnMessage && city === '',
+            'form-input-container-background form-input-container-background-input': true,
+          }"
           type="text"
           v-model="city"
           placeholder="city"
@@ -54,10 +54,11 @@
       </div>
       <div v-if="formType === 'registration'" class="form-input-container">
         <input
-          v-bind:class="[
-            warnMessage && phoneNumber === '' ? 'input-warning' : '',
-            'form-input-container-background form-input-container-background-input',
-          ]"
+          title="9 digits"
+          v-bind:class="{
+            'input-warning': warnMessage && phoneNumber === '',
+            'form-input-container-background form-input-container-background-input': true,
+          }"
           type="text"
           v-model="phoneNumber"
           placeholder="phone number"
@@ -66,10 +67,10 @@
       </div>
       <div v-if="formType === 'registration'" class="form-input-container">
         <select
-          v-bind:class="[
-            warnMessage && accountType === '' ? 'input-warning' : '',
-            'form-input-container-background form-input-container-background-select',
-          ]"
+          v-bind:class="{
+            'input-warning': warnMessage && accountType === '',
+            'form-input-container-background form-input-container-background-input': true,
+          }"
           v-model="accountType"
         >
           <option disabled value="">Select account type</option>
@@ -189,18 +190,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$textColor: #314252;
-$whiteColor: #ffffff;
-$linkColor: #28349b;
-$grayColorLight: #eeeeee;
-$grayColor: #e1e1e1;
-$grayColorDark: #757575;
-$greenColor: #47d1af;
-$greenColorLight: #bae6d5;
-$greenColorLight2: #c7ebdf;
-$greenColorDark: #2e6d51;
-$orangeColor: #dba614;
-$redColor: #c42e1a;
+@import '../styles/colors.scss';
 
 .container {
   width: 500px;

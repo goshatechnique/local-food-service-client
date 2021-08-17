@@ -5,6 +5,7 @@ const products = {
     productsList: [],
     searchString: '',
     pageNumber: 1,
+    isLoading: false,
   },
   mutations: {
     updateProductsList: function (state, { products, pageNumber }) {
@@ -18,9 +19,7 @@ const products = {
       state.productsList.push(newProduct);
     },
     deleteProductManual: function (state, id) {
-      state.productsList = state.productsList.filter(
-        product => product._id !== id,
-      );
+      state.productsList = state.productsList.filter(product => product._id !== id);
     },
     updateSearchString: function (state, value) {
       state.searchString = value;
@@ -32,6 +31,9 @@ const products = {
       state.productsList = [];
       state.searchString = '';
       state.pageNumber = 1;
+    },
+    setIsLoading: function (state, value) {
+      state.isLoading = value;
     },
   },
   actions: {
@@ -45,6 +47,7 @@ const products = {
     },
     fetchProducts: async function ({ commit }, params) {
       try {
+        commit('setIsLoading', true);
         const response = await requests.getProducts(params);
         // if (response.status === 200)
         commit('updateProductsList', {
@@ -53,6 +56,8 @@ const products = {
         });
       } catch (error) {
         console.error('products.js postProduct() | ', error);
+      } finally {
+        commit('setIsLoading', false);
       }
     },
     deleteProduct: async function ({ commit }, id) {
@@ -64,6 +69,7 @@ const products = {
     productsList: state => state.productsList,
     searchString: state => state.searchString,
     pageNumber: state => state.pageNumber,
+    isLoading: state => state.isLoading,
   },
 };
 
