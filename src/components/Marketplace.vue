@@ -1,6 +1,10 @@
 <template>
   <div class="container">
-    <ProductPopup v-if="isProductPopupVisible" :selectedProduct="selectedProduct" @switchProductPopup="switchProductPopup" />
+    <ProductPopup
+      v-if="isProductPopupVisible"
+      :selectedProduct="selectedProduct"
+      @switchProductPopup="switchProductPopup"
+    />
     <GmapMap
       v-if="this.defaultMapCoordinates.lat && this.defaultMapCoordinates.lng"
       :center="{
@@ -18,7 +22,12 @@
         }"
         :icon="yourLocation"
       />
-      <GmapMarker v-for="(product, index) in productsList" :key="index" :position="product.location" @click="switchProductPopup(product)" />
+      <GmapMarker
+        v-for="(product, index) in productsList"
+        :key="index"
+        :position="product.location"
+        @click="switchProductPopup(product)"
+      />
     </GmapMap>
     <div class="products-list" @scroll="handleScroll">
       <Loader v-if="isLoading && productsList.length === 0" />
@@ -116,16 +125,19 @@ export default {
         pageNumber: value,
       });
     },
-    currentCoordinates: function (value) {
-      if (value.lat === null && value.lng === null) {
-        return;
-      }
-      this.fetchProducts({
-        lat: value.lat,
-        lng: value.lng,
-        name: this.searchString,
-        pageNumber: this.pageNumber,
-      });
+    currentCoordinates: {
+      immediate: true,
+      handler(value) {
+        if (value.lat === null && value.lng === null) {
+          return;
+        }
+        this.fetchProducts({
+          lat: value.lat,
+          lng: value.lng,
+          name: this.searchString,
+          pageNumber: this.pageNumber,
+        });
+      },
     },
     searchString: function (value) {
       this.fetchProducts({
