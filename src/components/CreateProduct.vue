@@ -14,8 +14,18 @@
         <div class="overlay-alert">
           <div class="overlay-alert-text">{{ this.warnMessage }}</div>
         </div>
-        <input v-bind:class="[warnMessage && name === '' ? 'input-warning' : '', 'input']" type="text" v-model="name" placeholder="Product name" />
-        <input v-bind:class="[warnMessage && price === '' ? 'input-warning' : '', 'input']" type="text" v-model="price" placeholder="Product price" />
+        <input
+          v-bind:class="[warnMessage && name === '' ? 'input-warning' : '', 'input']"
+          type="text"
+          v-model="name"
+          placeholder="Product name"
+        />
+        <input
+          v-bind:class="[warnMessage && price === '' ? 'input-warning' : '', 'input']"
+          type="text"
+          v-model="price"
+          placeholder="Product price"
+        />
         <div class="input-background">
           <input
             v-bind:class="[warnMessage && location === '' ? 'input-warning' : '', 'input']"
@@ -34,7 +44,12 @@
         <div>
           <img class="image" v-if="imageUrl" :src="imageUrl" />
         </div>
-        <div v-bind:class="[warnMessage && imageUrl === '' ? 'input-file-background-warning' : '', 'input-file-background']">
+        <div
+          v-bind:class="[
+            warnMessage && imageUrl === '' ? 'input-file-background-warning' : '',
+            'input-file-background',
+          ]"
+        >
           <input class="input-file" type="file" name="file" id="file" ref="file" accept="image/*" @change="pickImage" />
           <label class="input-file-label" for="file"> PICK IMAGE </label>
         </div>
@@ -67,7 +82,15 @@ export default {
     ...mapActions(['postProduct']),
     ...mapMutations(['updateCurrentCoordinates']),
     collectProductData: function () {
-      if (this.name && this.price && this.description && this.location && this.currentCoordinates.lat && this.currentCoordinates.lng && this.image) {
+      if (
+        this.name &&
+        this.price &&
+        this.description &&
+        this.location &&
+        this.currentCoordinates.lat &&
+        this.currentCoordinates.lng &&
+        this.image
+      ) {
         const imageData = new FormData();
         imageData.append('file', this.image);
         imageData.append(
@@ -302,6 +325,11 @@ $redColor: #c42e1a;
   &-label {
     cursor: pointer;
     color: inherit;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     &:hover {
       color: inherit;
     }
